@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello PostController!{% endblock %}
+
+{% block body %}
+    <a class="fs-1 btn" href="{{ path('posts') }}"><</a>
+    <div class="border border-secondary rounded p-3 mb-4">
+        <p class="fw-bolder">{{ post.author.username }}</p>
+        <h3 class="mb-2">{{ post.title }}</h3>
+        <p class="text-muted">{{ post.content }}</p>
+
+        {% if app.user and  "ROLE_ADMIN" in app.user.roles %}
+            <div class="d-flex justify-content-space-between">
+                <a class="btn btn-primary me-3" href="{{ path('edit_post',{id:post.id}) }}">Edit</a>
+                <a class="btn btn-danger me-3" href="{{ path('delete_post',{id:post.id}) }}">Delete</a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

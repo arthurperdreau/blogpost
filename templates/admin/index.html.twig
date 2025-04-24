@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h3>Users: </h3>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Username</th>
+            <th>Role</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>
+                    {% for role in user.roles %}
+                        {% if role == 'ROLE_USER' %}
+                            <span class="badge rounded-pill text-bg-success">User</span>
+                        {% elseif role == 'ROLE_ADMIN' %}
+                            <span class="badge rounded-pill text-bg-warning">Admin</span>
+                        {% endif %}
+                    {% endfor %}
+                    {% if user == app.user %}
+                        <span class="badge rounded-pill text-bg-info">That's you</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if 'ROLE_ADMIN' not in user.roles %}
+                        <a href="{{ path('promote', {id:user.id}) }}" class="btn btn-success">Promote</a>
+                    {% else %}
+                        <a href="{{ path('demote', {id:user.id}) }}" class="btn btn-danger">Demote</a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

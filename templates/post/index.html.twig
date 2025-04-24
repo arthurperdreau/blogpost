@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello PostController!{% endblock %}
+
+{% block body %}
+    {% for post in posts %}
+        <div class="border border-secondary rounded p-3 mb-4">
+            <p class="fw-bolder">By {{ post.author.username }}</p>
+            <h3 class="mb-2">{{ post.title }}</h3>
+            <p class="text-muted">{{ post.content }}</p>
+            <a class="btn btn-primary" href="{{ path('show_post', {id:post.id}) }}">See</a>
+        </div>
+    {% endfor %}
+{% endblock %}

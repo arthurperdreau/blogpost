@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello PostController!{% endblock %}
+{% form_theme  form 'bootstrap_5_layout.html.twig' %}
+
+{% block body %}
+    {{ form_start(form) }}
+    {{ form_row(form.title) }}
+    {{ form_row(form.content) }}
+    <button class="btn btn-success" type="submit">Post</button>
+    {{ form_end(form) }}
+{% endblock %}
