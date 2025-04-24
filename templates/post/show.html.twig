@@ -1,11 +1,19 @@
 {% extends 'base.html.twig' %}
+{% form_theme  form 'bootstrap_5_layout.html.twig' %}
 
 {% block title %}Hello PostController!{% endblock %}
 
 {% block body %}
     <a class="fs-1 btn" href="{{ path('posts') }}"><</a>
     <div class="border border-secondary rounded p-3 mb-4">
-        <p class="fw-bolder">{{ post.author.username }}</p>
+        <p class="fw-bolder">Author: {{ post.author.username }}</p>
+
+        {% for image in post.images %}
+            <div class="d-flex flex-column justify-content-around align-items-center">
+                <img src="{{ vich_uploader_asset(image, "imageFile") }}" alt="">
+            </div>
+
+        {% endfor %}
         <h3 class="mb-2">{{ post.title }}</h3>
         <p class="text-muted">{{ post.content }}</p>
 
@@ -13,7 +21,35 @@
             <div class="d-flex justify-content-space-between">
                 <a class="btn btn-primary me-3" href="{{ path('edit_post',{id:post.id}) }}">Edit</a>
                 <a class="btn btn-danger me-3" href="{{ path('delete_post',{id:post.id}) }}">Delete</a>
+                <a class="btn btn-warning me-3" href="{{ path('post_image',{id:post.id}) }}">+ / - Image</a>
             </div>
         {% endif %}
+    </div>
+    <div>
+        {% for comment in post.comments %}
+
+            <div class="border-secondary-subtle border w-75 rounded p-3 mb-3">
+                <div class="d-flex justify-content-between align-items-center ">
+                    <p class="fw-bolder">From {{ comment.author.username }}</p>
+                    {% if comment.author == app.user %}
+                    <div class="d-flex align-items-center">
+                        <a href="{{ path('edit_comment', {id:comment.id}) }}" class="btn  me-2"><svg height="25" viewBox="0 0 24 24" width="25" xmlns="http://www.w3.org/2000/svg" id="fi_9356210"><g id="Layer_2" data-name="Layer 2"><path d="m12.64 5.42-10.29 10.29a2.38 2.38 0 0 0 -.68 1.41l-.41 3.6a1.81 1.81 0 0 0 1.81 2h.21l3.6-.41a2.42 2.42 0 0 0 1.41-.67l10.29-10.3z"></path><path d="m22.06 4.55-2.61-2.61a2.35 2.35 0 0 0 -3.33 0l-2.42 2.42 5.94 5.94 2.42-2.42a2.35 2.35 0 0 0 0-3.33z"></path></g></svg></a>
+                        <a href="{{ path('delete_comment', {id:comment.id}) }}" class="btn  "><svg id="fi_8567781" height="25" viewBox="0 0 512 512" width="25" xmlns="http://www.w3.org/2000/svg" data-name="Layer 1"><path d="m187.2 21.332h137.6v27.3h21.33v-30.668a17.9 17.9 0 0 0 -5.26-12.694l-.033.024-.019-.024a17.831 17.831 0 0 0 -12.647-5.27h-144.343a17.8 17.8 0 0 0 -11.8 4.472 9.571 9.571 0 0 0 -.9.8 17.9 17.9 0 0 0 -5.259 12.694v30.67h21.331v-27.3zm58.13 210.368a10.67 10.67 0 0 1 21.34 0v192.723a10.67 10.67 0 0 1 -21.34 0zm100.87-.878a10.662 10.662 0 1 1 21.251 1.751l-16.1 192.727a10.661 10.661 0 1 1 -21.25-1.75l16.1-192.727zm-164.3 192.728a10.661 10.661 0 1 1 -21.251 1.75l-16.1-192.726a10.661 10.661 0 1 1 21.25-1.751zm-127.708-279.432 58.426 355.755a14.334 14.334 0 0 0 14.331 12.127h258.1a14.334 14.334 0 0 0 14.331-12.128l58.431-355.755zm413.46-74.157h-423.3a26.526 26.526 0 0 0 -26.411 26.42v26.4h476.122v-26.4a26.534 26.534 0 0 0 -26.411-26.42z" fill="#e63f32" fill-rule="evenodd"></path></svg></a>
+                    </div>
+                    {% endif %}
+                </div>
+                <p>{{ comment.content }}</p>
+            </div>
+
+
+        {% endfor %}
+    </div>
+
+    <div class="w-75 mt-4">
+        <h4>Add a comment</h4>
+        {{ form_start(form,{'action': path('new_comment', {id:post.id}), 'method': 'POST'}) }}
+        {{ form_widget(form.content) }}
+        <button type="submit" class="btn btn-primary mt-2">Comment</button>
+        {{ form_end(form) }}
     </div>
 {% endblock %}

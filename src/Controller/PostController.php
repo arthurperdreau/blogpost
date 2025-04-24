@@ -2,7 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\Comment;
+use App\Entity\Image;
 use App\Entity\Post;
+use App\Form\CommentType;
+use App\Form\ImageType;
 use App\Form\PostType;
 use App\Repository\PostRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -43,7 +47,7 @@ final class PostController extends AbstractController
     }
 
     #[Route('/post/show/{id}', name: 'show_post',priority: -1 )]
-    public function show(Post $post): Response
+    public function show(Post $post, Request $request, EntityManagerInterface $manager): Response
     {
         if (!$post){
             return $this->redirectToRoute("posts");
@@ -51,9 +55,21 @@ final class PostController extends AbstractController
         if(!$this->getUser()){
             $this->redirectToRoute("app_login");
         }
+        $comment=new Comment();
+        $form = $this->createForm(CommentType::class, $comment);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $comment->setPost($post);
+            $comment->setAuthor($this->getUser());
+            $manager->persist($comment);
+            $manager->flush();
+            return $this->redirectToRoute('show_post', ['id' => $post->getId()]);
+        }
+
 
         return $this->render('post/show.html.twig', [
             'post' => $post,
+            'form' => $form->createView(),
         ]);
     }
 
@@ -96,6 +112,54 @@ final class PostController extends AbstractController
         }
         return $this->redirectToRoute('posts');
 
+    }
+
+    #[Route('/post/addimage/{id}', name: 'post_image')]
+    public function addImage(Post $post, Request $request, EntityManagerInterface $manager): Response
+    {
+        if(!$this->getUser() || !$post)
+        {
+            return $this->redirectToRoute('app_login');
+        }
+        if($post->getAuthor() !== $this->getUser())
+        {
+            return $this->redirectToRoute('app_post_show', ['id' => $post->getId()]);
+        }
+
+        $image = new Image();
+        $form = $this->createForm(ImageType::class, $image);
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid()){
+            $image->setPost($post);
+            $manager->persist($image);
+            $manager->flush();
+            return $this->redirectToRoute('post_image', ['id' => $post->getId()]);
+        }
+
+
+        return $this->render('post/images.html.twig', [
+            'post' => $post,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/post/remove-image/{id}', name: 'remove_image')]
+    public function removeImage(Image $image, Request $request, EntityManagerInterface $manager): Response
+    {
+        if(!$this->getUser() || !$image)
+        {
+            return $this->redirectToRoute('app_login');
+        }
+        if($image->getPost()->getAuthor() !== $this->getUser())
+        {
+            return $this->redirectToRoute('show_post', ['id' => $image->getPost()->getId()]);
+        }
+        $postId = $image->getPost()->getId();
+
+        $manager->remove($image);
+        $manager->flush();
+
+        return $this->redirectToRoute('post_image', ['id' => $postId]);
     }
 
 

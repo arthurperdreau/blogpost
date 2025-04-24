@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+{% form_theme  form 'bootstrap_5_layout.html.twig' %}
+
+{% block body %}
+    <a href="{{ path('show_post',{id:post.id}) }}" class="fs-1 btn"><</a>
+    <div class="images d-flex justify-content-around align-items-center">
+        {% for image in post.images %}
+            <div class="d-flex flex-column justify-content-around align-items-center">
+                <img src="{{ vich_uploader_asset(image, "imageFile") }}" alt="">
+                <a href="{{ path('remove_image', {id:image.id}) }}" class="btn btn-danger"><strong>X</strong></a>
+            </div>
+
+        {% endfor %}
+    </div>
+
+
+
+    <h3>Add a new image : </h3>
+
+    {{ form_start(form) }}
+    {{ form_row(form.imageFile) }}
+    <button type="submit" class="btn btn-success">Add</button>
+    {{ form_end(form) }}
+{% endblock %}
+
+{% block title %}
+
+{% endblock %}
