@@ -10,7 +10,7 @@
 
         {% for image in post.images %}
             <div class="d-flex flex-column justify-content-around align-items-center">
-                <img src="{{ vich_uploader_asset(image, "imageFile") }}" alt="">
+                <img src="{{ vich_uploader_asset(image, "imageFile" )| imagine_filter('show') }}" alt="">
             </div>
 
         {% endfor %}
